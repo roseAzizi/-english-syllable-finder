@@ -1,13 +1,19 @@
-import pandas as pd 
+import pandas as pd  
+import tensorflow as tf 
+#from tensorflow.python.keras.preprocessing.sequence import pad_sequences  
+#from tensorflow.python.keras.layers import TextVectorization
 
 def main(): 
     #change float to int at the end of the script if ur running into memory issues
     column_specs = { 
-        'Original Raw': str, 
-        'Regular Word': str, 
+        'Original Raw': str,  
+        'Tokenized Original Raw': object,
+        'Regular Word': str,  
+        'Tokenized Regular Word': object,
         'Syllables': float, 
         'Word Length': float, 
-        'Vowel Constonant Pattern': str, 
+        'Vowel Constonant Pattern': str,  
+        'Tokenized Vowel Constonant Pattern': object,
         "Total Number of Vowels": float
     }
     hyp_data = pd.read_csv('mhyph.txt', sep=r'\s{2,}', encoding='iso-8859-15', engine = 'python', header = None, 
@@ -16,12 +22,16 @@ def main():
     hyp_data.drop_duplicates()  
 
     feature_extraction(hyp_data)
-    hyp_data.dropna(inplace=True)
+
     #pickle it for later
     hyp_data.to_pickle('hyp_data.pkl') 
 
 
 def feature_extraction(hyp_data):
+    #im going to replace spaces with "-" to make things easier in the tokenization step  
+    #idk if this is an issue in modifying the original raw data 
+    #keeping these comments in case i need to make a new column with these changes instead later
+    hyp_data['Original Raw'] = hyp_data['Original Raw'].str.replace(" ", "-", regex = True)  
     #syllables df counts the seperators, spaces and hypens 
     hyp_data['Syllables'] = hyp_data['Original Raw'].str.count(r'[¥ -]') + 1  
     #remove the seperators 
@@ -57,6 +67,10 @@ def vowel_consonant_pattern(word):
         elif i.isalpha():
             pattern += "C"
     return pattern
+
+#def pad_and_token(): 
+    #tokenizer = Tokenizer(char_level=True)  
+
 
 if __name__ == "__main__":
     main()
