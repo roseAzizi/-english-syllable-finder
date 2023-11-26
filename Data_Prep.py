@@ -1,20 +1,15 @@
 import pandas as pd  
-import tensorflow as tf 
-#from tensorflow.python.keras.preprocessing.sequence import pad_sequences  
-#from tensorflow.python.keras.layers import TextVectorization
+
 
 def main(): 
     #change float to int at the end of the script if ur running into memory issues
     column_specs = { 
         'Original Raw': str,  
-        'Tokenized Original Raw': object,
         'Regular Word': str,  
-        'Tokenized Regular Word': object,
         'Syllables': float, 
         'Word Length': float, 
         'Vowel Constonant Pattern': str,  
-        'Tokenized Vowel Constonant Pattern': object,
-        "Total Number of Vowels": float
+        'Total Number of Vowels': float
     }
     hyp_data = pd.read_csv('mhyph.txt', sep=r'\s{2,}', encoding='iso-8859-15', engine = 'python', header = None, 
     names=list(column_specs.keys()), dtype=column_specs)  
@@ -25,7 +20,7 @@ def main():
 
     #pickle it for later
     hyp_data.to_pickle('hyp_data.pkl') 
-
+    print ("pickled and ready to use! :))")
 
 def feature_extraction(hyp_data):
     #im going to replace spaces with "-" to make things easier in the tokenization step  
@@ -67,9 +62,6 @@ def vowel_consonant_pattern(word):
         elif i.isalpha():
             pattern += "C"
     return pattern
-
-#def pad_and_token(): 
-    #tokenizer = Tokenizer(char_level=True)  
 
 
 if __name__ == "__main__":
