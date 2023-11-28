@@ -47,7 +47,7 @@ def feature_extraction(hyp_data):
     #make into int to make my life easier 
     hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']] = hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']].astype(int)
     #Combinde all the object for preprocessing 
-    hyp_data["Combinded Strings"] = hyp_data['Original Raw'] + ' ' + hyp_data['Regular Word'] + hyp_data['Vowel Constonant Pattern']
+    #hyp_data["Combinded Strings"] = hyp_data['Original Raw'] + ' ' + hyp_data['Regular Word'] + ' ' + hyp_data['Vowel Constonant Pattern']
     return hyp_data
    
 
