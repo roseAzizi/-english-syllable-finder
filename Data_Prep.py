@@ -16,7 +16,7 @@ def main():
 
     hyp_data.drop_duplicates()  
 
-    feature_extraction(hyp_data)
+    hyp_data = feature_extraction(hyp_data)
 
     #pickle it for later
     hyp_data.to_pickle('hyp_data.pkl') 
@@ -36,12 +36,20 @@ def feature_extraction(hyp_data):
     #VC pattern 
     hyp_data['Vowel Constonant Pattern'] = hyp_data['Original Raw'].apply(vowel_consonant_pattern)
     # Count total number of vowels in the pattern
-    hyp_data['Total Number of Vowels'] = hyp_data['Vowel Constonant Pattern'].str.count('V')
-    #helps with memory and is easy 
-    #hyp_data['Syllables'] = hyp_data['Syllables'].astype(int)
-    #hyp_data['Word Length'] = hyp_data['Word Length'].astype(int)
-    #hyp_data['Total Number of Vowels'] = hyp_data['Total Number of Vowels'].astype(int)
-
+    hyp_data['Total Number of Vowels'] = hyp_data['Vowel Constonant Pattern'].str.count('V') 
+    #remove any weird or non-words in the dataset. Basically anything without vowels or haivng /'s 
+    # will remove legitimate words like hwyl, but I'd consider these more slang and outliers tbh 
+    hyp_data = hyp_data[~hyp_data['Regular Word'].astype(str).str.contains("/", regex = False)] 
+    # Fill NaN values with 0 for selected columns
+    hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']] = hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']].fillna(0)
+    # Filter out rows where any of the specified columns are 0
+    hyp_data = hyp_data[(hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']] != 0).all(axis=1)] 
+    #make into int to make my life easier 
+    hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']] = hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']].astype(int)
+    #Combinde all the object for preprocessing 
+    hyp_data["Combinded Strings"] = hyp_data['Original Raw'] + ' ' + hyp_data['Regular Word'] + hyp_data['Vowel Constonant Pattern']
+    return hyp_data
+   
 
 #function to find the vowel constoant patter
 def vowel_consonant_pattern(word):
@@ -62,6 +70,8 @@ def vowel_consonant_pattern(word):
         elif i.isalpha():
             pattern += "C"
     return pattern
+
+
 
 
 if __name__ == "__main__":

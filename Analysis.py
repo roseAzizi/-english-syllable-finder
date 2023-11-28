@@ -6,16 +6,63 @@ from tensorflow import keras
 from keras.layers import TextVectorization 
 from sklearn.model_selection import train_test_split
 
-hyp_data = pd.read_pickle('hyp_data.pkl')
+hyp_data = pd.read_pickle('hyp_data.pkl') 
+#drop all the columns in combined since theyre useless now 
+hyp_data = hyp_data.drop(["Original Raw", "Regular Word", "Vowel Constonant Pattern"], axis = 1) 
 
+x_var = hyp_data.drop("Syllables", axis = 1)
+y_var = hyp_data [['Syllables']]  
+x_train, x_test, y_train, y_test = train_test_split(x_var, y_var, test_size = 0.2) 
+
+#text vectorization for the combined section 
+
+'''
 #spilt data into train and test and validation sets
-x_var = hyp_data[['Original Raw', 'Regular Word', 'Word Length', 'Vowel Constonant Pattern', 'Total Number of Vowels']]
+x_var = hyp_data.drop("Syllables", axis = 1)
 y_var = hyp_data [['Syllables']]  
 x_main, x_test, y_main, y_test = train_test_split(x_var, y_var, test_size = 0.2) 
 x_train, x_val, y_train, y_val = train_test_split(x_main, y_main, test_size = 0.2)
 
 #print ("the test data x size is: " + str(len(x_test)))
 #print ("the test data y size is: " + str(len(y_test))) 
+
+print(x_var.dtypes) 
+print(y_var.dtypes) 
+'''
+#create a text vectorizatoin layer  
+'''
+vector_test = x_train["Original Raw"].iloc[1]
+print(vector_test) 
+#unique_chars = set(''.join(df['column_name'].astype(str))) for an entire column
+unique_char_test = len(set(''.join(vector_test))) 
+print (unique_char_test)
+max_len_test = len(vector_test)
+print (max_len_test)   
+
+x_val.to_csv('helpx.csv')
+y_val.to_csv('helpy.csv')
+'''
+'''
+def vectorize(word, max_unique_chars, max_sequence_length):  
+    vectorize_layer= TextVectorization( 
+        max_tokens = max_unique_chars,
+        output_mode='int', #change to binary if u wanna use one hot encoding instead
+        output_sequence_length = max_sequence_length,
+        split='character' #by char since we're doing words not sentences and stuff 
+    ) 
+    vectorize_layer.adapt(word) 
+    return vectorize_layer(word).numpy() 
+
+print(vectorize(vector_test, unique_char_test, max_len_test))
+
+'''
+
+
+
+
+
+
+
 
 '''
 #tokenize the data and also count the vocab size and seuqence length 
