@@ -30,7 +30,8 @@ def feature_extraction(hyp_data):
     #syllables df counts the seperators, spaces and hypens 
     hyp_data['Syllables'] = hyp_data['Original Raw'].str.count(r'[¥ -]') + 1  
     #remove the seperators 
-    hyp_data['Regular Word'] = hyp_data['Original Raw'].str.replace('¥','',regex=False) 
+    hyp_data['Regular Word'] = hyp_data['Original Raw'].str.replace('¥','',regex=False)  
+
     #word length 
     hyp_data['Word Length'] = hyp_data['Regular Word'].str.len() 
     #VC pattern 
@@ -38,8 +39,8 @@ def feature_extraction(hyp_data):
     # Count total number of vowels in the pattern
     hyp_data['Total Number of Vowels'] = hyp_data['Vowel Constonant Pattern'].str.count('V') 
     #remove any weird or non-words in the dataset. Basically anything without vowels or haivng /'s 
-    # will remove legitimate words like hwyl, but I'd consider these more slang and outliers tbh 
-    hyp_data = hyp_data[~hyp_data['Regular Word'].astype(str).str.contains("/", regex = False)] 
+    hyp_data = hyp_data[~hyp_data['Regular Word'].astype(str).str.contains(r"[^a-zA-Z ']")]  
+    hyp_data = hyp_data[hyp_data['Total Number of Vowels'] != 0]
     # Fill NaN values with 0 for selected columns
     hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']] = hyp_data[['Syllables', 'Word Length', 'Total Number of Vowels']].fillna(0)
     # Filter out rows where any of the specified columns are 0
