@@ -31,7 +31,6 @@ def feature_extraction(hyp_data):
     hyp_data['Syllables'] = hyp_data['Original Raw'].str.count(r'[¥ -]') + 1  
     #remove the seperators 
     hyp_data['Regular Word'] = hyp_data['Original Raw'].str.replace('¥','',regex=False)  
-
     #word length 
     hyp_data['Word Length'] = hyp_data['Regular Word'].str.len() 
     #VC pattern 
@@ -71,7 +70,6 @@ def vowel_consonant_pattern(word):
         elif i.isalpha():
             pattern += "C"
     return pattern
-
 
 
 
